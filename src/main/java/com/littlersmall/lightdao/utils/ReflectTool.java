@@ -1,7 +1,5 @@
 package com.littlersmall.lightdao.utils;
 
-import com.google.common.base.CaseFormat;
-
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -13,32 +11,27 @@ import java.util.List;
  * Created by sigh on 2016/1/20.
  */
 public class ReflectTool {
-    private static final String SETTER_PREFIX = "set";
-
-    public static List<String> getPropertyNames(Class<?> clazz) {
-        List<String> names = new ArrayList<String>();
+    public static List<PropertyInfo> getPropertyNames(Object target) {
+        List<PropertyInfo> propertyInfos = new ArrayList<PropertyInfo>();
 
         try {
-            BeanInfo targetBeanInfo = Introspector.getBeanInfo(clazz);
+            BeanInfo targetBeanInfo = Introspector.getBeanInfo(target.getClass());
             PropertyDescriptor[] propertyDescriptors = targetBeanInfo.getPropertyDescriptors();
 
             for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-                String name = propertyDescriptor.getName();
                 Method targetGet = propertyDescriptor.getReadMethod();
                 Method targetSet = propertyDescriptor.getWriteMethod();
 
                 if (null != targetGet && null != targetSet) {
-                    String formatName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_UNDERSCORE, name);
-
-                    names.add(formatName);
+                    propertyInfos.add(new PropertyInfo(propertyDescriptor, target));
                 }
             }
         } catch (Exception e) {
-
+            //todo
         }
 
-        return names;
+        return propertyInfos;
     }
 
-    
+
 }

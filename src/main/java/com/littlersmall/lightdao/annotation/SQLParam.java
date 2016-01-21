@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 @Target( { ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface SQLParam {
+public @interface SqlParam {
     String value();
 }
