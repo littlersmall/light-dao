@@ -1,4 +1,4 @@
-package com.littlersmall.lightdao.rowmapper;
+package com.littlersmall.lightdao.sqlgenerator;
 
 import com.littlersmall.lightdao.utils.PropertyInfo;
 import com.littlersmall.lightdao.utils.ReflectTool;

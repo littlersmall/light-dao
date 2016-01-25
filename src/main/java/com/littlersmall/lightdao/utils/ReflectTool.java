@@ -1,10 +1,13 @@
 package com.littlersmall.lightdao.utils;
 
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,5 +36,31 @@ public class ReflectTool {
         return propertyInfos;
     }
 
+    public static Class<?> getActualClass(Type genericType) {
+        Class<?> actualClass = null;
 
+        if (genericType instanceof  ParameterizedType) {
+            Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+
+            if (actualType instanceof  Class<?>) {
+                actualClass = (Class<?>) actualType;
+            }
+        } else {
+            //todo
+        }
+
+        return actualClass;
+    }
+
+    public static void main(String[] args) {
+        class A {
+            List<String> myList;
+        }
+
+        List<Integer> testA = new ArrayList<Integer>();
+        List<Long> testB = new ArrayList<Long>();
+        List<A> testC = new ArrayList<A>();
+
+        System.out.println(getActualClass(A.class.getDeclaredFields()[0].getGenericType()));
+    }
 }
