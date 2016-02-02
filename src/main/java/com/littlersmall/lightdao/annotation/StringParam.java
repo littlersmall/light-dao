@@ -3,12 +3,11 @@ package com.littlersmall.lightdao.annotation;
 import java.lang.annotation.*;
 
 /**
- * Created by sigh on 2016/1/18.
+ * Created by sigh on 2016/1/26.
  */
-@Target({ ElementType.TYPE })
+@Target( { ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited
 @Documented
-public @interface Dao {
-    String dbName();
+public @interface StringParam {
+    String value();
 }

@@ -1,6 +1,7 @@
-package com.littlersmall.lightdao.classgenerator;
+package com.littlersmall.lightdao.sqlgenerator;
 
 import com.littlersmall.lightdao.annotation.SqlParam;
+import com.littlersmall.lightdao.annotation.StringParam;
 import com.littlersmall.lightdao.utils.ReflectTool;
 
 import java.lang.annotation.Annotation;
@@ -29,19 +30,34 @@ public class MethodMetaData {
         return annotations[0];
     }
 
-    public Map<Integer, String> getSqlParam() {
-        Map<Integer, String> sqlParam = new HashMap<Integer, String>();
+    public Map<String, Integer> getSqlParam() {
+        Map<String, Integer> sqlParam = new HashMap<String, Integer>();
         Annotation[][] annotations = method.getParameterAnnotations();
 
         for (int index = 0; index < annotations.length; index++) {
             for (Annotation annotation : annotations[index]) {
                 if (annotation instanceof SqlParam) {
-                    sqlParam.put(index, ((SqlParam) annotation).value());
+                    sqlParam.put(((SqlParam) annotation).value(), index);
                 }
             }
         }
 
         return sqlParam;
+    }
+
+    public Map<String, Integer> getStringParam() {
+        Map<String, Integer> stringParam = new HashMap<String, Integer>();
+        Annotation[][] annotations = method.getParameterAnnotations();
+
+        for (int index = 0; index < annotations.length; index++) {
+            for (Annotation annotation : annotations[index]) {
+                if (annotation instanceof StringParam) {
+                    stringParam.put(((StringParam) annotation).value(), index);
+                }
+            }
+        }
+
+        return stringParam;
     }
 
     public boolean isReturnList() {

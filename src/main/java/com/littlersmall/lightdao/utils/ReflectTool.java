@@ -1,13 +1,11 @@
 package com.littlersmall.lightdao.utils;
 
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,6 +48,33 @@ public class ReflectTool {
         }
 
         return actualClass;
+    }
+
+    public static Object getNamedField(Object target, String fieldName) {
+        Object value = null;
+
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, target.getClass());
+            //通过get方法获得value
+            Method getMethod = propertyDescriptor.getReadMethod();
+
+            if (null != getMethod) {
+                getMethod.setAccessible(true);
+                value = getMethod.invoke(target);
+            }
+
+        } catch (NoSuchFieldException e) {
+            //todo
+        } catch (IntrospectionException e) {
+            //todo
+        } catch (InvocationTargetException e) {
+            //todo
+        } catch (IllegalAccessException e) {
+            //todo
+        }
+
+        return value;
     }
 
     public static void main(String[] args) {

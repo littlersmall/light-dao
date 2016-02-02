@@ -12,31 +12,28 @@ import java.sql.SQLException;
  * Created by sigh on 2016/1/20.
  */
 public class GenerateRowMapper {
-    private final Object target;
-
-    public GenerateRowMapper(Object target) {
-        this.target = target;
-    }
-
-    public RowMapper mapRow() {
+    public static RowMapper mapRow(final Class<?> clazz) {
         return new RowMapper() {
             public Object mapRow(ResultSet resultSet, int rowNum) {
                 Object instance = null;
 
                 try {
-                    for (PropertyInfo propertyInfo : ReflectTool.getPropertyNames(target)) {
+                    instance = clazz.newInstance();
+
+                    for (PropertyInfo propertyInfo : ReflectTool.getPropertyNames(clazz)) {
                         String name = propertyInfo.getName();
                         Class<?> type = propertyInfo.getType();
                         Object value = getValue(name, type, resultSet);
 
                         propertyInfo.setValue(value);
                     }
-
                 } catch (IllegalAccessException e) {
                     //todo
                 } catch (InvocationTargetException e) {
                     //todo
                 } catch (SQLException e) {
+                    //todo
+                } catch (InstantiationException e) {
                     //todo
                 }
 
@@ -45,7 +42,7 @@ public class GenerateRowMapper {
         };
     }
 
-    private Object getValue(String valueName, Class<?> valueType, ResultSet resultSet) throws SQLException {
+    static Object getValue(String valueName, Class<?> valueType, ResultSet resultSet) throws SQLException {
         Object value;
 
         if (valueType == String.class) {
