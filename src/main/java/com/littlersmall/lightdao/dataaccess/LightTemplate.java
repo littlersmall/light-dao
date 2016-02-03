@@ -18,10 +18,10 @@ public class LightTemplate {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<?> select(String sql, Object[] args, RowMapper rowMapper) {
+    public <T> List<T> select(String sql, Object[] args, RowMapper rowMapper) {
         PreparedStatementCreator preparedStatementCreator = getPreparedCreator(sql, args);
 
-        return (List<?>) jdbcTemplate.query(preparedStatementCreator, new RowMapperResultSetExtractor(rowMapper));
+        return (List<T>) jdbcTemplate.query(preparedStatementCreator, new RowMapperResultSetExtractor(rowMapper));
     }
 
     public int update(String sql, Object[] args) {

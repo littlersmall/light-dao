@@ -2,6 +2,7 @@ package com.littlersmall.lightdao.classgenerator;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -13,7 +14,8 @@ import java.lang.reflect.Proxy;
  */
 public class LightDaoFactoryBean implements FactoryBean, InitializingBean {
     protected Class<?> objectType;
-    protected JdbcTemplate jdbcTemplate;
+    protected ListableBeanFactory beanFactory;
+    protected String dbName;
 
     public void setObjectType(Class<?> clazz) {
         objectType = clazz;
@@ -23,8 +25,12 @@ public class LightDaoFactoryBean implements FactoryBean, InitializingBean {
         return objectType;
     }
 
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setBeanFactory(ListableBeanFactory  beanFactory) {
+        this.beanFactory = beanFactory;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
     }
 
     public boolean isSingleton() {
@@ -37,7 +43,7 @@ public class LightDaoFactoryBean implements FactoryBean, InitializingBean {
     }
 
     public Object getObject() {
-        DaoInvocationHandler daoInvocationHandler = new DaoInvocationHandler(jdbcTemplate);
+        DaoInvocationHandler daoInvocationHandler = new DaoInvocationHandler(beanFactory, dbName);
 
         return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), new Class[] { objectType }, daoInvocationHandler);
 

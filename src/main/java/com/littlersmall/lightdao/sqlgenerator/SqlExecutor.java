@@ -16,6 +16,8 @@ public class SqlExecutor {
     public SqlExecutor(Method method, Object[] rawArgs, JdbcTemplate jdbcTemplate) {
         sqlMetaData = new SqlMetaData(method, rawArgs);
         lightTemplate = new LightTemplate(jdbcTemplate);
+
+        System.out.println(method.getName());
     }
 
     public void build() {

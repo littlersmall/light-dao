@@ -1,6 +1,5 @@
 package com.littlersmall.lightdao.spring;
 
-import com.littlersmall.lightdao.annotation.TestClass;
 import com.littlersmall.lightdao.classgenerator.LightDaoFactoryBean;
 import com.littlersmall.lightdao.dataaccess.GetJdbcTemplate;
 import javafx.util.Pair;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,7 +24,6 @@ public class LightDaoBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
     public final void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
             throws BeansException {
-
         doPostBeanFactory(beanFactory);
     }
 
@@ -48,9 +45,9 @@ public class LightDaoBeanFactoryPostProcessor implements BeanFactoryPostProcesso
         final String daoClassName = beanDefinition.getBeanClassName();
         MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
 
-        JdbcTemplate jdbcTemplate = GetJdbcTemplate.getJdbcTemplate(beanFactory, dbName);
         propertyValues.addPropertyValue("objectType", daoClassName);
-        propertyValues.addPropertyValue("jdbcTemplate", jdbcTemplate);
+        propertyValues.addPropertyValue("beanFactory", beanFactory);
+        propertyValues.addPropertyValue("dbName", dbName);
 
         ScannedGenericBeanDefinition scannedBeanDefinition = (ScannedGenericBeanDefinition) beanDefinition;
         scannedBeanDefinition.setPropertyValues(propertyValues);

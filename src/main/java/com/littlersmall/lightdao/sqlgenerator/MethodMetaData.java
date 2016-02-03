@@ -64,11 +64,11 @@ public class MethodMetaData {
         return method.getReturnType().isAssignableFrom(List.class);
     }
 
-    public Class<?> getReturnType() {
+    public <T> Class<T> getReturnType() {
         if (isReturnList()) {
             return ReflectTool.getActualClass(method.getGenericReturnType());
         } else {
-            return method.getReturnType();
+            return (Class<T>) method.getReturnType();
         }
     }
 }

@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
  * Created by sigh on 2016/1/22.
  */
 public class SqlMetaData {
-    //final static Pattern PATTERN = Pattern.compile("\\{([a-zA-Z0-9_\\.]+)\\}|##\\((.+)\\)");
     final static Pattern PATTERN = Pattern.compile("\\{([a-zA-Z0-9_\\.]+)\\}");
 
     private final MethodMetaData methodMetaData;
@@ -119,6 +118,8 @@ public class SqlMetaData {
         Class<?> returnType = methodMetaData.getReturnType();
 
         sqlModel.rowMapper = GenerateRowMapper.mapRow(returnType);
+
+        System.out.println("return type is " + returnType.getName());
     }
 
     public static void main(String[] args) {

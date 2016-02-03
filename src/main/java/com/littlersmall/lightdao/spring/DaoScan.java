@@ -77,8 +77,7 @@ public class DaoScan {
             //if (urlStr.contains("dao") || urlStr.contains("DAO")) {
             File resourceFile = resource.getFile();
             if (resourceFile.isFile()) {
-                urls.add("jar:file:" + resourceFile.toURI().getPath()
-                        + ResourceUtils.JAR_URL_SEPARATOR);
+                urls.add("jar:file:" + resourceFile.toURI().getPath() + ResourceUtils.JAR_URL_SEPARATOR);
             } else if (resourceFile.isDirectory()) {
                 urls.add(resourceFile.toURI().toString());
             }
@@ -123,7 +122,7 @@ public class DaoScan {
 
     private Set<Resource> getJarResources() throws IOException {
         Set<Resource> resources = new HashSet<Resource>();
-        Resource[] metaInfResources = pathMatchingResourcePatternResolver.getResources("classpath*:/META-INF/");
+        Resource[] metaInfResources = pathMatchingResourcePatternResolver.getResources("classpath*");//:/META-INF/");
 
         for (Resource metaInfResource : metaInfResources) {
             URL urlObject = metaInfResource.getURL();

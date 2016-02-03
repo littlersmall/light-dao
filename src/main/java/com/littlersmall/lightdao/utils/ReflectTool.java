@@ -34,14 +34,14 @@ public class ReflectTool {
         return propertyInfos;
     }
 
-    public static Class<?> getActualClass(Type genericType) {
-        Class<?> actualClass = null;
+    public static <T> Class<T> getActualClass(Type genericType) {
+        Class<T> actualClass = null;
 
         if (genericType instanceof  ParameterizedType) {
             Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
 
             if (actualType instanceof  Class<?>) {
-                actualClass = (Class<?>) actualType;
+                actualClass = (Class<T>) actualType;
             }
         } else {
             //todo
