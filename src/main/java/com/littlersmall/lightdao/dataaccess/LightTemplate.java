@@ -3,6 +3,7 @@ package com.littlersmall.lightdao.dataaccess;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.*;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -11,13 +12,18 @@ import java.util.List;
 /**
  * Created by sigh on 2016/1/19.
  */
+//对应三种注解
+// select -> @Select
+// update -> @Update
+// execute -> @Execute
 public class LightTemplate {
     private JdbcTemplate jdbcTemplate;
 
-    public LightTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public LightTemplate(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> List<T> select(String sql, Object[] args, RowMapper rowMapper) {
         PreparedStatementCreator preparedStatementCreator = getPreparedCreator(sql, args);
 
@@ -34,8 +40,9 @@ public class LightTemplate {
         jdbcTemplate.execute(sql);
     }
 
+    //根据sql(已将参数替换成?)和args生成Prepare语句
     private PreparedStatementCreator getPreparedCreator(final String sql, final Object[] args) {
-        PreparedStatementCreator preparedStatementCreator = new PreparedStatementCreator() {
+        return new PreparedStatementCreator() {
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
@@ -55,7 +62,5 @@ public class LightTemplate {
                 return preparedStatement;
             }
         };
-
-        return preparedStatementCreator;
     }
 }

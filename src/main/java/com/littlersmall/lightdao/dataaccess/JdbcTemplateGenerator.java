@@ -2,7 +2,6 @@ package com.littlersmall.lightdao.dataaccess;
 
 import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -11,21 +10,24 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by sigh on 2016/2/2.
  */
-public class GetJdbcTemplate {
+public class JdbcTemplateGenerator {
     static final String dataSourceSuffix = "DataSource";
-    static Map<String, JdbcTemplate> jdbcTemplateMap = new ConcurrentHashMap<String, JdbcTemplate>();
+    static Map<String, LightTemplate> jdbcTemplateMap = new ConcurrentHashMap<String, LightTemplate>();
 
-    public static JdbcTemplate getJdbcTemplate(ListableBeanFactory beanFactory, String dbName) {
+    //1 生成BeanId，(dbName + "DataSource")
+    //2 查找该Datasource，并生成LightTemplate
+    public static LightTemplate getOrCreateJdbcTemplate(ListableBeanFactory beanFactory, String dbName) {
+        //1
         String beanId = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, dbName.toLowerCase()) + dataSourceSuffix;
 
+        //2
         if (!jdbcTemplateMap.containsKey(beanId)) {
-            synchronized (GetJdbcTemplate.class) {
+            synchronized (JdbcTemplateGenerator.class) {
                 if (!jdbcTemplateMap.containsKey(beanId)) {
                     if (beanFactory.containsBeanDefinition(beanId)) {
-
                         DataSource dataSource = beanFactory.getBean(beanId, DataSource.class);
 
-                        jdbcTemplateMap.put(beanId, new JdbcTemplate(dataSource));
+                        jdbcTemplateMap.put(beanId, new LightTemplate(dataSource));
                     }
                 }
             }

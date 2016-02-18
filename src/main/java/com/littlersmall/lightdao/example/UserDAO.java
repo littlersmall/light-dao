@@ -1,4 +1,4 @@
-package com.littlersmall.lightdao.mytest;
+package com.littlersmall.lightdao.example;
 
 import com.littlersmall.lightdao.annotation.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
  * Created by sigh on 2016/2/3.
  */
 @Dao(dbName = "my_db")
-public interface MyTest1 {
+public interface UserDao {
     String table_name = "user";
 
     @Data
@@ -30,6 +30,18 @@ public interface MyTest1 {
 
     @Select("select id, name from " + table_name + " where id = {id}")
     User selectTable(@SqlParam("id") int id);
+
+    @Select("select sum(id) from " + table_name)
+    int selectSum();
+
+    @Data
+    class TableInfo {
+        String tableName;
+        String tableSchema;
+    }
+
+    @Select("show tables")
+    List<TableInfo> showTables();
 
     @Select("select id, name from " + table_name)
     List<User> selectTable();
