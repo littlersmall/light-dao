@@ -4,9 +4,10 @@ import com.littlersmall.lightdao.annotation.*;
 import com.littlersmall.lightdao.executor.model.MethodMetaModel;
 import com.littlersmall.lightdao.executor.model.SqlMetaModel;
 import com.littlersmall.lightdao.utils.ReflectTool;
-import org.springframework.jdbc.core.RowMapper;
+import lombok.Data;
+import lombok.extern.java.Log;
+import org.springframework.beans.BeanUtils;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,27 +18,30 @@ import java.util.regex.Pattern;
 /**
  * Created by sigh on 2016/1/22.
  */
-//构造一个Dao中方法的sql元信息
+//在运行时动态构造一个Dao中方法的sql元信息
+@Log
 public class SqlMetaModelBuilder {
     final static Pattern PATTERN = Pattern.compile("\\{([a-zA-Z0-9_\\.]+)\\}");
 
     private MethodMetaModel methodMetaModel;
     private Object[] rawArgs;
 
-    public SqlMetaModelBuilder(Method method, Object[] rawArgs) {
-        this.methodMetaModel = new MethodMetaModelBuilder(method).build();
+    public SqlMetaModelBuilder(MethodMetaModel methodMetaModel, Object[] rawArgs) {
+        this.methodMetaModel = methodMetaModel;
         this.rawArgs = rawArgs;
     }
 
     //1 构建sql语句和参数
-    //2 构建RowMapper和返回类型
+    //2 拷贝一些运行时需要的Method元数据
     public SqlMetaModel build() {
         SqlMetaModel sqlMetaModel = new SqlMetaModel();
 
         //1
         conSqlAndArgs(sqlMetaModel);
         //2
-        conRowMapperAndReturnType(sqlMetaModel);
+        BeanUtils.copyProperties(methodMetaModel, sqlMetaModel);
+
+        log.info("sql meta data: " + sqlMetaModel);
 
         return sqlMetaModel;
     }
@@ -75,7 +79,7 @@ public class SqlMetaModelBuilder {
 
                 if (sqlParamMap.containsKey(params[0])) {
                     int index = sqlParamMap.get(params[0]);
-                    Object arg = ReflectTool.getNamedField(rawArgs[index], params[1]);
+                    Object arg = ReflectTool.getFieldByName(rawArgs[index], params[1]);
                     //3
                     argList.add(arg);
                 }
@@ -92,21 +96,9 @@ public class SqlMetaModelBuilder {
         sqlMetaModel.setSqlType(methodMetaModel.getSqlType());
     }
 
-    //1 获得returnType
-    //2 构建RowMapper
-    private void conRowMapperAndReturnType(SqlMetaModel sqlMetaModel) {
-        //1
-        Class<?> returnType = methodMetaModel.getReturnType();
-        sqlMetaModel.setReturnList(methodMetaModel.isReturnList());
-
-        //2
-        RowMapper rowMapper = RowMapperGenerator.mapRow(returnType);
-        sqlMetaModel.setRowMapper(rowMapper);
-    }
-
     /* for test */
     public static void main(String[] args) {
-        SqlMetaModel sqlMetaModel = new SqlMetaModelBuilder(TestDao.class.getMethods()[0],
+        SqlMetaModel sqlMetaModel = new SqlMetaModelBuilder(new MethodMetaModelBuilder(TestDao.class.getMethods()[0]).build(),
                 new Object[] { 3, "abc", new TestClass() }).build();
 
         System.out.println(sqlMetaModel.getSql());
@@ -114,19 +106,12 @@ public class SqlMetaModelBuilder {
     }
 
     interface TestDao {
-        @Select("select * from abc where id = {param1}, name = {param2}, age = {param3.cc}") void get(@SqlParam("param1") int param1,
+        @Select("select * from abc where id = {param1}, name = {param2}, age = {param3.value}") void get(@SqlParam("param1") int param1,
                 @StringParam("param2") String param2, @SqlParam("param3") TestClass param3);
     }
 
+    @Data
     static class TestClass {
-        private int cc = 5;
-
-        public int getCc() {
-            return cc;
-        }
-
-        public void setCc(int cc) {
-            this.cc = cc;
-        }
+        private int value = 5;
     }
 }

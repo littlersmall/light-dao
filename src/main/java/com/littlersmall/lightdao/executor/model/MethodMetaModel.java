@@ -2,6 +2,7 @@ package com.littlersmall.lightdao.executor.model;
 
 import com.littlersmall.lightdao.enums.SqlType;
 import lombok.Data;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.util.Map;
 
@@ -16,4 +17,5 @@ public class MethodMetaModel {
     Class<?> returnType;
     Map<String, Integer> sqlParamMap;
     Map<String, Integer> stringParamMap;
+    RowMapper rowMapper;
 }

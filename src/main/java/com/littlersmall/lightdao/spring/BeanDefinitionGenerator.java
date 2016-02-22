@@ -3,6 +3,7 @@ package com.littlersmall.lightdao.spring;
 import com.littlersmall.lightdao.annotation.Dao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.io.Resource;
@@ -15,11 +16,11 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by sigh on 2016/2/15.
  */
+@Log
 public class BeanDefinitionGenerator {
     static PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
     static SimpleMetadataReaderFactory simpleMetadataReaderFactory = new CachingMetadataReaderFactory(pathMatchingResourcePatternResolver);
@@ -41,6 +42,7 @@ public class BeanDefinitionGenerator {
 
         for (Resource resource : resources) {
             if (resource.isReadable()) {
+                log.info("resource is: " + resource);
                 //2
                 MetadataReader metadataReader = simpleMetadataReaderFactory.getMetadataReader(resource);
                 ScannedGenericBeanDefinition scannedGenericBeanDefinition = new ScannedGenericBeanDefinition(metadataReader);
@@ -52,6 +54,7 @@ public class BeanDefinitionGenerator {
                 String dbName = getDbName(scannedGenericBeanDefinition.getMetadata());
 
                 if (null != dbName) {
+                    log.info("beanId: " + scannedGenericBeanDefinition.getBeanClassName() + " dbName: " + dbName);
                     beanDefinitions.add(new BeanDefinitionWithDbName(scannedGenericBeanDefinition, dbName));
                 }
             }

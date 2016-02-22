@@ -1,6 +1,7 @@
 package com.littlersmall.lightdao.utils;
 
 import com.google.common.base.CaseFormat;
+import com.littlersmall.lightdao.exception.ReflectException;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,22 +28,27 @@ public class PropertyInfo {
         return propertyDescriptor.getPropertyType();
     }
 
-    public void setValue(Object value) throws InvocationTargetException, IllegalAccessException {
+    public void setValue(Object value) {
         Method targetWriteMethod = propertyDescriptor.getWriteMethod();
 
-        setValue(targetWriteMethod, new Object[] {value});
+        setValue(targetWriteMethod, new Object[] { value });
     }
 
-    private void setValue(Method method, Object[] args) throws IllegalArgumentException,
-            IllegalAccessException, InvocationTargetException {
+    private void setValue(Method method, Object[] args) {
         if (method == null || args == null) {
-            //todo
+            throw new ReflectException("method is null or args is null");
         }
 
         if (!Modifier.isPublic(method.getModifiers()) || !Modifier.isPublic(method.getDeclaringClass().getModifiers())) {
             method.setAccessible(true);
         }
 
-        method.invoke(target, args);
+        try {
+            method.invoke(target, args);
+        } catch (IllegalAccessException e) {
+            throw new ReflectException(e);
+        } catch (InvocationTargetException e) {
+            throw new ReflectException(e);
+        }
     }
 }

@@ -2,8 +2,11 @@ package com.littlersmall.lightdao.executor;
 
 import com.littlersmall.lightdao.annotation.*;
 import com.littlersmall.lightdao.enums.SqlType;
+import com.littlersmall.lightdao.exception.ExecutorException;
 import com.littlersmall.lightdao.executor.model.MethodMetaModel;
 import com.littlersmall.lightdao.utils.ReflectTool;
+import lombok.extern.java.Log;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -14,7 +17,8 @@ import java.util.Map;
 /**
  * Created by sigh on 2016/1/21.
  */
-//构造一个Dao方法的元信息
+//静态构造一个Dao方法的元信息
+@Log
 public class MethodMetaModelBuilder {
     private final Method method;
 
@@ -26,6 +30,7 @@ public class MethodMetaModelBuilder {
     //2 构造sqlParamMap
     //3 构造stringParamMap
     //4 构造返回类型
+    //5 构建RowMapper
     public MethodMetaModel build() {
         MethodMetaModel methodMetaModel = new MethodMetaModel();
 
@@ -37,6 +42,10 @@ public class MethodMetaModelBuilder {
         conStringParam(methodMetaModel);
         //4
         conReturnType(methodMetaModel);
+        //5
+        conRowMapper(methodMetaModel);
+
+        log.info("method name: " + method.getName() + " meta data: " + methodMetaModel);
 
         return methodMetaModel;
     }
@@ -60,6 +69,10 @@ public class MethodMetaModelBuilder {
                 rawSql = ((Execute) annotation).value();
                 break;
             }
+        }
+
+        if (rawSql == null || sqlType == null) {
+            throw new ExecutorException("@Select or @Update or @Execute use error");
         }
 
         methodMetaModel.setSqlType(sqlType);
@@ -108,5 +121,11 @@ public class MethodMetaModelBuilder {
 
         methodMetaModel.setReturnList(isReturnList);
         methodMetaModel.setReturnType(returnType);
+    }
+
+    private void conRowMapper(MethodMetaModel methodMetaModel) {
+        RowMapper rowMapper = RowMapperGenerator.mapRow(methodMetaModel.getReturnType());
+
+        methodMetaModel.setRowMapper(rowMapper);
     }
 }

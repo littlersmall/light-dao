@@ -23,7 +23,7 @@ public class LightTemplate {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public <T> List<T> select(String sql, Object[] args, RowMapper rowMapper) {
         PreparedStatementCreator preparedStatementCreator = getPreparedCreator(sql, args);
 

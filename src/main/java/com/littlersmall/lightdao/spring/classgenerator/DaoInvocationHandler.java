@@ -25,13 +25,13 @@ public class DaoInvocationHandler implements InvocationHandler {
         if (!sqlExecutorMap.containsKey(method)) {
             synchronized (method) {
                 if (!sqlExecutorMap.containsKey(method)) {
-                    SqlExecutor sqlExecutor = new SqlExecutor.Builder(method, args, dataSourceHolder.getLightTemplate()).build();
+                    SqlExecutor sqlExecutor = new SqlExecutor.Builder(method, dataSourceHolder.getLightTemplate()).build();
 
                     sqlExecutorMap.put(method, sqlExecutor);
                 }
             }
         }
 
-        return sqlExecutorMap.get(method).execute();
+        return sqlExecutorMap.get(method).execute(args);
     }
 }

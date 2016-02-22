@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Dao(dbName = "my_db")
 public interface UserDao {
-    String table_name = "user";
+    String TABLE_NAME = "user";
 
     @Data
     @AllArgsConstructor
@@ -22,16 +22,22 @@ public interface UserDao {
         public User() {};
     }
 
-    @Execute("create table " + table_name + " (id int, name varchar(200));")
-    void createTable();
+    @Execute("create table " + TABLE_NAME + " (id int, name varchar(200));")
+    void create();
 
-    @Update("insert into " + table_name + "(id, name) values ({user.id}, {user.name});")
-    int insertTable(@SqlParam("user") User user);
+    @Update("insert into " + TABLE_NAME + "(id, name) values ({user.id}, {user.name});")
+    int insert(@SqlParam("user") User user);
 
-    @Select("select id, name from " + table_name + " where id = {id}")
-    User selectTable(@SqlParam("id") int id);
+    @Select("select id, name from " + TABLE_NAME + " where id = {id}")
+    User select(@SqlParam("id") int id);
 
-    @Select("select sum(id) from " + table_name)
+    @Select("select id, name from " + TABLE_NAME + " where name = {name}")
+    List<User> select(@SqlParam("name") String name);
+
+    @Select("select id, name from " + TABLE_NAME)
+    List<User> select();
+
+    @Select("select sum(id) from " + TABLE_NAME)
     int selectSum();
 
     @Data
@@ -42,7 +48,4 @@ public interface UserDao {
 
     @Select("show tables")
     List<TableInfo> showTables();
-
-    @Select("select id, name from " + table_name)
-    List<User> selectTable();
 }

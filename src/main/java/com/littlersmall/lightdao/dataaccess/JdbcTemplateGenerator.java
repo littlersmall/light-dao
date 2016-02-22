@@ -1,6 +1,7 @@
 package com.littlersmall.lightdao.dataaccess;
 
 import com.google.common.base.CaseFormat;
+import com.littlersmall.lightdao.exception.DataAccessException;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 import javax.sql.DataSource;
@@ -28,6 +29,8 @@ public class JdbcTemplateGenerator {
                         DataSource dataSource = beanFactory.getBean(beanId, DataSource.class);
 
                         jdbcTemplateMap.put(beanId, new LightTemplate(dataSource));
+                    } else {
+                        throw new DataAccessException("no database :" + dbName);
                     }
                 }
             }

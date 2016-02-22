@@ -1,5 +1,7 @@
 package com.littlersmall.lightdao.utils;
 
+import com.littlersmall.lightdao.exception.ReflectException;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -20,7 +22,9 @@ public class ReflectTool {
             PropertyDescriptor[] propertyDescriptors = targetBeanInfo.getPropertyDescriptors();
 
             for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                //getter
                 Method targetGet = propertyDescriptor.getReadMethod();
+                //setter
                 Method targetSet = propertyDescriptor.getWriteMethod();
 
                 if (null != targetGet && null != targetSet) {
@@ -28,12 +32,15 @@ public class ReflectTool {
                 }
             }
         } catch (Exception e) {
-            //todo
+            throw new ReflectException(e);
         }
 
         return propertyInfos;
     }
 
+    //获得集合中的泛型
+    //比如List<String>，返回String.class
+    @SuppressWarnings({ "unchecked" })
     public static <T> Class<T> getActualClass(Type genericType) {
         Class<T> actualClass = null;
 
@@ -44,17 +51,16 @@ public class ReflectTool {
                 actualClass = (Class<T>) actualType;
             }
         } else {
-            //todo
+            throw new ReflectException("Not a ParameterizedType");
         }
 
         return actualClass;
     }
 
-    public static Object getNamedField(Object target, String fieldName) {
+    public static Object getFieldByName(Object target, String fieldName) {
         Object value = null;
 
         try {
-            Field field = target.getClass().getDeclaredField(fieldName);
             PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, target.getClass());
             //通过get方法获得value
             Method getMethod = propertyDescriptor.getReadMethod();
@@ -64,28 +70,25 @@ public class ReflectTool {
                 value = getMethod.invoke(target);
             }
 
-        } catch (NoSuchFieldException e) {
-            //todo
         } catch (IntrospectionException e) {
-            //todo
+            throw new ReflectException(e);
         } catch (InvocationTargetException e) {
-            //todo
+            throw new ReflectException(e);
         } catch (IllegalAccessException e) {
-            //todo
+            throw new ReflectException(e);
         }
 
         return value;
     }
 
-    public static void main(String[] args) {
-        class A {
-            List<String> myList;
+    /* for test */
+    public static void main(String[] args) throws NoSuchMethodException {
+        class MyClass {
+            public List<String> getList() {
+                return new ArrayList<String>();
+            }
         }
 
-        List<Integer> testA = new ArrayList<Integer>();
-        List<Long> testB = new ArrayList<Long>();
-        List<A> testC = new ArrayList<A>();
-
-        System.out.println(getActualClass(A.class.getDeclaredFields()[0].getGenericType()));
+        System.out.println(getActualClass(MyClass.class.getMethods()[0].getGenericReturnType()));
     }
 }

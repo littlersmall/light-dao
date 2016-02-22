@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 @Data
 public class SqlMetaModel {
     String sql;
-    SqlType sqlType;
     Object[] args;
+    SqlType sqlType;
     RowMapper rowMapper;
     boolean isReturnList;
 }

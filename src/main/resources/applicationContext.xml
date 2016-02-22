@@ -39,6 +39,5 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="password" value=""></property>
 	</bean>
 
-	<bean
-			class="com.littlersmall.lightdao.spring.LightDaoBeanFactoryPostProcessor" />
+	<!-- <bean class="com.littlersmall.lightdao.spring.LightDaoBeanFactoryPostProcessor" /> -->
 </beans>

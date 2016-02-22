@@ -1,10 +1,7 @@
 package com.littlersmall.lightdao.spring.classgenerator;
 
 import com.littlersmall.lightdao.dataaccess.DataSourceHolder;
-import com.littlersmall.lightdao.example.UserDao;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 import java.lang.reflect.Proxy;
 
