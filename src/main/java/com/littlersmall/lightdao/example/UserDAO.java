@@ -3,6 +3,7 @@ package com.littlersmall.lightdao.example;
 import com.littlersmall.lightdao.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -15,11 +16,10 @@ public interface UserDao {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     class User {
         int id;
         String name;
-
-        public User() {};
     }
 
     @Execute("create table " + TABLE_NAME + " (id int, name varchar(200));")

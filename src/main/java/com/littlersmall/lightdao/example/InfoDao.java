@@ -3,6 +3,7 @@ package com.littlersmall.lightdao.example;
 import com.littlersmall.lightdao.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -17,12 +18,11 @@ public interface InfoDao {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     class Info {
         int id;
         String information;
         int userId;
-
-        public Info() {}
     }
 
     @Execute("create table " + TABLE_NAME + " (id int, information varchar, user_id int)")
@@ -33,11 +33,10 @@ public interface InfoDao {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     class UserInfo {
         String information;
         String name;
-
-        public UserInfo() {};
     }
 
     //跨表查询示例
