@@ -19,7 +19,7 @@ public class JdbcTemplateGenerator {
     //2 查找该Datasource，并生成LightTemplate
     public static LightTemplate getOrCreateJdbcTemplate(ListableBeanFactory beanFactory, String dbName) {
         //1
-        String beanId = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, dbName.toLowerCase()) + dataSourceSuffix;
+        String beanId = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, dbName.toLowerCase()) + dataSourceSuffix;
 
         //2
         if (!jdbcTemplateMap.containsKey(beanId)) {

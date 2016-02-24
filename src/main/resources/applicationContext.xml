@@ -31,7 +31,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		jade.context.spring.* 的设置看成整个系统的默认值) -->
 
 
-	<bean id="myDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+	<bean id="MyDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		  destroy-method="close" lazy-init="false">
 		<property name="driverClassName" value="org.h2.Driver"></property>
 		<property name="url" value="jdbc:h2:mem:mifi_internal_account"></property>
