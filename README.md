@@ -49,17 +49,22 @@ select (IFNULL(payment, 0) - IFNULL(repayment, 0)) balance from
 	and product_id in (76)) as repay;
 ```
 如果想改成xml配置......
+
 真的做不到啊.......
 
 在一次次的被mybaties的复杂配置搞的头疼无奈之后；
+
 在一次次的xml配置失败，无限重新上线之后；
+
 在一次次吐槽无力后
 ——
 
 终于下定决心自己写一套dao处理框架，这套框架中坚决不要再出现任何关于sql的xml。
 而且要满足下面几个要求：
 1 支持原始的sql使用
+
 2 支持sql的变量替换
+
 3 支持sql返回结果的映射
 
 二 示例
@@ -133,6 +138,7 @@ long getBalanceNum(@SqlParam("startTime") long startTime, @SqlParam("endTime") l
 3 数据库层，执行实际的sql
 结构图如下：
 ![层级结构图](http://upload-images.jianshu.io/upload_images/1397675-1cc02e510854638b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 具体实现部分请参考源码，注释比较丰富，实现也相对比较直观。
 
 四 使用方式
@@ -150,15 +156,21 @@ public interface InfoDao     //接口名必须以Dao结尾(方便被Resolver发�
 User select(@SqlParam("id") int id); 
 ```
 a sql语句的注解必须为@Select, @Update, @Execute三种之一，一般来说，select表示查询语句，update表示有写入的语句，比如insert和update，execute表示ddl语句，比如create table这种
+
 b 在sql语句中，请将参数使用{}来标记。一般来说，可以标记正常的命名参数，比如{id}，还可以标记bean的属性参数，比如{user.name}
+
 c 函数参数也有两种标记方式，@StringParam和@SqlParam，被@StringParam标记的参数将直接替换sql中同名的参数，比如"select {name} from user" @StringParma String name("littlersmall"),sql语句将被替换为"select littlersmall from user"。通常用于一些可变字符串的直接替换。
 被@SqlParam标记的参数有两种形式，普通的命名参数和bean的属性参数，而且参数可以是任意类型，比如：
 {id} @SqlParam int id;
 {user.name} @SqlParam User user(无需再写user.name);
 该方式主要用于sql的参数替换
+
 d 返回值通常有几种：
+
 (1) select类型，可以返回基本类型，比如int, long等，还可以返回用户自定义的Bean类型，比如User比如Thrift生成的bean，还可以返回多条结果，使用一个List，比如List<User>, List<String>
+
 (2) Update类型，只能返回int，表示插入或修改的行数
+
 (3) Execute类型无返回值
 
 3 使用Dao接口
@@ -180,6 +192,7 @@ public class UserDaoExample {
 </bean>
 ```
 a 请使用数据库名作为beanId的前缀，比如本例中，数据库的名字为my_db，使用大写的驼峰命名方式MyDb
+
 b beanId结尾部分请使用DataSource
 
 五 源码地址
@@ -203,7 +216,11 @@ github地址
 ---
 
 1 有一个大致的方向之后就应该马上动手，越拖延越没有动力
+
 2 java的反射确实很强大
+
 3 每个类，每个函数尽量只做一件事情
+
 4 反复的重构很有必要，而且也很有收获
+
 5 再复杂的代码，也是由最简单的东西一步步进化而来
