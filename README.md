@@ -61,6 +61,7 @@ select (IFNULL(payment, 0) - IFNULL(repayment, 0)) balance from
 
 终于下定决心自己写一套dao处理框架，这套框架中坚决不要再出现任何关于sql的xml。
 而且要满足下面几个要求：
+
 1 支持原始的sql使用
 
 2 支持sql的变量替换
@@ -133,9 +134,13 @@ long getBalanceNum(@SqlParam("startTime") long startTime, @SqlParam("endTime") l
 ---
 
 源码基本上分为三层
+
 1 spring层，用于向spring的BeanFactory注册用户自定义的Dao接口
+
 2 executor层，将Dao接口中的每一个方法组装成一个一个的executor执行体
+
 3 数据库层，执行实际的sql
+
 结构图如下：
 ![层级结构图](http://upload-images.jianshu.io/upload_images/1397675-1cc02e510854638b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
