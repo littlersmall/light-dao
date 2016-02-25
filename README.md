@@ -1,4 +1,9 @@
 # light-dao
+light-dao是一个轻量级的orm处理框架。
+它的核心思想是尽可能简单的使用原生sql。
+它基于spring构建，可以和mybaties等其他数据处理框架配合使用。
+
+
 一 由来
 
 ---
