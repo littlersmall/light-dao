@@ -21,16 +21,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</context:component-scan>
 
 
-	<!-- JadeBeanFactoryPostProcessorPostProcessor 将扫描符合规范的DAO接口，并作为spring容器的bean -->
-
-	<!-- 如果要禁用JadeBeanFactoryPostProcessorPostProcessor，请设置系统属性jade.context.spring为0 (0代表disable, 1代表enable)。 
-		也可以通过设置jade.context.spring.包名或类名单独为各个package或类做定制(也是设置disable或enable）， 
-		如果给定的类或package没有设置，则逐级使用父级的设置， jade.context.spring.com.yourcompany.dao.UserDAO 
-		的父级是 jade.context.spring.com.yourcompany.dao; jade.context.spring.com 
-		的父级是 jade.context.spring.*; jade.context.spring.* 是根，没有父级别（嗯，因此您可以将 
-		jade.context.spring.* 的设置看成整个系统的默认值) -->
-
-
 	<bean id="MyDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		  destroy-method="close" lazy-init="false">
 		<property name="driverClassName" value="org.h2.Driver"></property>
@@ -38,6 +28,4 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="username" value="sa"></property>
 		<property name="password" value=""></property>
 	</bean>
-
-	<!-- <bean class="com.littlersmall.lightdao.spring.LightDaoBeanFactoryPostProcessor" /> -->
 </beans>

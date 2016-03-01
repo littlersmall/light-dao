@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  *
  * 该注解用于标记参数，可以是基本类型或是Bean
  */
-@Target( { ElementType.PARAMETER })
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface SqlParam {

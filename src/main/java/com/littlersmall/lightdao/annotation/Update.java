@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  *
  * 该注解标记所有的写语句，比如insert into, update, insert into select 等等
  */
-@Target( { ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Update {

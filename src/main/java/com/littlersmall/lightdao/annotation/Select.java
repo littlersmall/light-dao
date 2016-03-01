@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  *
  * 该注解标记select语句
  */
-@Target( { ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Select {

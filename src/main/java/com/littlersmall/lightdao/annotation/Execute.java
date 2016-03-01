@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  *
  * 该注解一般标记ddl语句
  */
-@Target( { ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Execute {

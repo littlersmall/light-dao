@@ -22,6 +22,11 @@ public class UserDaoExample {
 
         UserDaoExample userDaoExample = ac.getBean(UserDaoExample.class);
 
+        UserDao userDao2 = ac.getBean(UserDao.class);
+
+        System.out.println(userDao2 == userDaoExample.userDao);
+
+
         //创建user表
         userDaoExample.userDao.create();
 
