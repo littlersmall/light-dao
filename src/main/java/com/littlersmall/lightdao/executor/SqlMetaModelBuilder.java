@@ -1,6 +1,7 @@
 package com.littlersmall.lightdao.executor;
 
 import com.littlersmall.lightdao.annotation.*;
+import com.littlersmall.lightdao.exception.ExecutorException;
 import com.littlersmall.lightdao.executor.model.MethodMetaModel;
 import com.littlersmall.lightdao.executor.model.SqlMetaModel;
 import com.littlersmall.lightdao.utils.ReflectTool;
@@ -46,6 +47,9 @@ public class SqlMetaModelBuilder {
         return sqlMetaModel;
     }
 
+    //2016/3/18新增功能，将{1}, {2}替换为参数的第1,2个参数
+    //
+    //
     //1 遍历sql，查找被@SqlParam和@StringPara标记的参数
     //2 将标记的位置替换成? or String，
     //3 将被标记参数按序放入args中
@@ -82,6 +86,15 @@ public class SqlMetaModelBuilder {
                     Object arg = ReflectTool.getFieldByName(rawArgs[index], params[1]);
                     //3
                     argList.add(arg);
+                }
+            } else if (Character.isDigit(key.charAt(0))) { //{1}, {2}
+                try {
+                    int index = Integer.valueOf(key);
+
+                    //3
+                    argList.add(rawArgs[index - 1]);
+                } catch (Exception e) {
+                    throw new ExecutorException(e);
                 }
             }
 

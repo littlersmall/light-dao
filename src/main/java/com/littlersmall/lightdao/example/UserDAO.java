@@ -28,8 +28,8 @@ public interface UserDao {
     @Update("insert into " + TABLE_NAME + "(id, name) values ({user.id}, {user.name});")
     int insert(@SqlParam("user") User user);
 
-    @Select("select id, name from " + TABLE_NAME + " where id = {id}")
-    User select(@SqlParam("id") int id);
+    @Select("select id, name from " + TABLE_NAME + " where id = {1}")
+    User select(int id);
 
     @Select("select id, name from " + TABLE_NAME + " where name = {name}")
     List<User> select(@SqlParam("name") String name);

@@ -24,8 +24,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="MyDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		  destroy-method="close" lazy-init="false">
 		<property name="driverClassName" value="org.h2.Driver"></property>
-		<property name="url" value="jdbc:h2:mem:mifi_internal_account"></property>
-		<property name="username" value="sa"></property>
+		<property name="url" value="jdbc:h2:mem:my_db"></property>
+		<property name="username" value="test"></property>
 		<property name="password" value=""></property>
 	</bean>
 </beans>

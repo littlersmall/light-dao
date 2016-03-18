@@ -41,14 +41,14 @@ public class ReflectTool {
     //获得集合中的泛型
     //比如List<String>，返回String.class
     @SuppressWarnings({ "unchecked" })
-    public static <T> Class<T> getActualClass(Type genericType) {
-        Class<T> actualClass = null;
+    public static  Class<?> getActualClass(Type genericType) {
+        Class<?> actualClass = null;
 
         if (genericType instanceof  ParameterizedType) {
             Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
 
             if (actualType instanceof  Class<?>) {
-                actualClass = (Class<T>) actualType;
+                actualClass = (Class<?>) actualType;
             }
         } else {
             throw new ReflectException("Not a ParameterizedType");
