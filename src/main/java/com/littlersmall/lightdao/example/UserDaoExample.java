@@ -5,6 +5,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by sigh on 2016/2/3.
@@ -35,6 +38,15 @@ public class UserDaoExample {
 
         System.out.println(userDaoExample.userDao.insert(user1));
         System.out.println(userDaoExample.userDao.insert(user2));
+
+        UserDao.User user3 = new UserDao.User(3, "tester3");
+        UserDao.User user4 = new UserDao.User(4, "tester4");
+
+        List<UserDao.User> users = new ArrayList<UserDao.User>();
+        users.add(user3);
+        users.add(user4);
+
+        System.out.println(Arrays.toString(userDaoExample.userDao.insert(users)));
 
         System.out.println(userDaoExample.userDao.select(1));
         System.out.println(userDaoExample.userDao.select());

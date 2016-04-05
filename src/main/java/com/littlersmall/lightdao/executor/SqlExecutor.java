@@ -55,9 +55,9 @@ public class SqlExecutor {
             break;
         case SELECT:
             if (sqlMetaModel.isReturnList()) {
-                result = lightTemplate.select(sqlMetaModel.getSql(), sqlMetaModel.getArgs(), sqlMetaModel.getRowMapper());
+                result = lightTemplate.select(sqlMetaModel.getSql(), sqlMetaModel.getArgsList().get(0), sqlMetaModel.getRowMapper());
             } else {
-                List<?> resultList = lightTemplate.select(sqlMetaModel.getSql(), sqlMetaModel.getArgs(), sqlMetaModel.getRowMapper());
+                List<?> resultList = lightTemplate.select(sqlMetaModel.getSql(), sqlMetaModel.getArgsList().get(0), sqlMetaModel.getRowMapper());
 
                 if (resultList.size() == 0) {
                     result = null;
@@ -69,7 +69,10 @@ public class SqlExecutor {
             }
             break;
         case UPDATE:
-            result = lightTemplate.update(sqlMetaModel.getSql(), sqlMetaModel.getArgs());
+            result = lightTemplate.update(sqlMetaModel.getSql(), sqlMetaModel.getArgsList().get(0));
+            break;
+        case BATCH_UPDATE:
+            result = lightTemplate.batchUpdate(sqlMetaModel.getSql(), sqlMetaModel.getArgsList());
             break;
         }
 

@@ -32,81 +32,126 @@ public class SqlMetaModelBuilder {
         this.rawArgs = rawArgs;
     }
 
-    //1 构建sql语句和参数
-    //2 拷贝一些运行时需要的Method元数据
+    //1 拷贝一些运行时需要的Method元数据
+    //2 构建sql语句和参数
     public SqlMetaModel build() {
         SqlMetaModel sqlMetaModel = new SqlMetaModel();
 
         //1
-        conSqlAndArgs(sqlMetaModel);
-        //2
         BeanUtils.copyProperties(methodMetaModel, sqlMetaModel);
+        //2
+        conBatchSqlAndArgs(sqlMetaModel);
 
         log.info("sql meta data: " + sqlMetaModel);
 
         return sqlMetaModel;
     }
 
-    //2016/3/18新增功能，将{1}, {2}替换为参数的第1,2个参数
-    //
-    //
-    //1 遍历sql，查找被@SqlParam和@StringPara标记的参数
-    //2 将标记的位置替换成? or String，
-    //3 将被标记参数按序放入args中
-    private void conSqlAndArgs(SqlMetaModel sqlMetaModel) {
-        String rawSql = methodMetaModel.getRawSql();
-        Map<String, Integer> stringParamMap = methodMetaModel.getStringParamMap();
-        Map<String, Integer> sqlParamMap = methodMetaModel.getSqlParamMap();
-        List<Object> argList = new ArrayList<Object>();
-        StringBuilder realSqlBuilder = new StringBuilder();
+    private void conBatchSqlAndArgs(SqlMetaModel sqlMetaModel) {
+        int length = 1;
 
-        int start = 0;
-        Matcher matcher = PATTERN.matcher(rawSql);
-        //1
-        while (matcher.find(start)) {
-            realSqlBuilder.append(rawSql.substring(start, matcher.start()));
-
-            String key = matcher.group(1);
-            Object value = "?";
-
-            //2
-            //StringParam
-            if (stringParamMap.containsKey(key)) {
-                int index = stringParamMap.get(key);
-                value = rawArgs[index].toString();
-            } else if (sqlParamMap.containsKey(key)) { //SqlParam
-                int index = sqlParamMap.get(key);
-                //3
-                argList.add(rawArgs[index]);
-            } else if (key.contains(".")) { //特殊的SqlParam 例如 user.name
-                String params[] = key.split("\\.");
-
-                if (sqlParamMap.containsKey(params[0])) {
-                    int index = sqlParamMap.get(params[0]);
-                    Object arg = ReflectTool.getFieldByName(rawArgs[index], params[1]);
-                    //3
-                    argList.add(arg);
-                }
-            } else if (Character.isDigit(key.charAt(0))) { //{1}, {2}
-                try {
-                    int index = Integer.valueOf(key);
-
-                    //3
-                    argList.add(rawArgs[index - 1]);
-                } catch (Exception e) {
-                    throw new ExecutorException(e);
+        if (null != rawArgs) {
+            for (Object object : rawArgs) {
+                if (object instanceof List) {
+                    System.out.println("bbbbbbbb" + object.getClass());
+                    length = ((List<?>) object).size();
+                    break;
                 }
             }
-
-            realSqlBuilder.append(value);
-            start = matcher.end();
         }
 
-        realSqlBuilder.append(rawSql.substring(start));
+        conSqlAndArgs(sqlMetaModel, length);
+    }
 
-        sqlMetaModel.setSql(realSqlBuilder.toString());
-        sqlMetaModel.setArgs(argList.toArray());
-        sqlMetaModel.setSqlType(methodMetaModel.getSqlType());
+    //2016/3/31新增功能，支持批量插入，例如 insert(@ListParam("users") List<User> users);
+    //2016/3/18新增功能，将{0}, {1}替换为参数的第1,2个参数
+    //
+    //1 循环构建sql和args
+    //2 遍历sql，查找被@SqlParam和@StringPara标记的参数
+    //3 将标记的位置替换成? or String，
+    //4 将被标记参数按序放入args中
+    private void conSqlAndArgs(SqlMetaModel sqlMetaModel, int length) {
+        List<Object[]> argLists = new ArrayList<Object[]>();
+        Map<String, Integer> stringParamMap = methodMetaModel.getStringParamMap();
+        Map<String, Integer> sqlParamMap = methodMetaModel.getSqlParamMap();
+
+        String rawSql = methodMetaModel.getRawSql();
+        Matcher matcher = PATTERN.matcher(rawSql);
+
+        //1
+        for (int index = 0; index < length; index++) {
+            int start = 0;
+            List<Object> argList = new ArrayList<Object>();
+            StringBuilder realSqlBuilder = new StringBuilder();
+
+            //2
+            while (matcher.find(start)) {
+                realSqlBuilder.append(rawSql.substring(start, matcher.start()));
+
+                String key = matcher.group(1);
+                Object value = "";
+
+                //3
+                //StringParam 直接替换，不走批处理策略
+                if (stringParamMap.containsKey(key)) {
+                    int i = stringParamMap.get(key);
+
+                    value = rawArgs[i].toString();
+                } else { //SqlParam
+                    value = "?";
+
+                    if (sqlParamMap.containsKey(key)) { //标准的SqlParam
+                        int i = sqlParamMap.get(key);
+
+                        //4
+                        argList.add(ReflectTool.getListObject(rawArgs[i], index));
+                    } else if (key.contains(".")) { //特殊的SqlParam 例如 user.name
+                        String params[] = key.split("\\.");
+
+                        if (sqlParamMap.containsKey(params[0])) {
+                            int i = sqlParamMap.get(params[0]);
+                            Object param = ReflectTool.getListObject(rawArgs[i], index);
+                            Object arg = ReflectTool.getFieldByName(param, params[1]);
+
+                            //4
+                            argList.add(arg);
+                        } else if (Character.isDigit(params[0].charAt(0))) { //{0.id}, {1.name}
+                            int i = Integer.valueOf(params[0]);
+                            Object param = ReflectTool.getListObject(rawArgs[i], index);
+                            Object arg = ReflectTool.getFieldByName(param, params[1]);
+
+                            //4
+                            argList.add(arg);
+                        }
+                    } else if (Character.isDigit(key.charAt(0))) { //{0}, {1}
+                        try {
+                            int i = Integer.valueOf(key);
+                            Object arg = ReflectTool.getListObject(rawArgs[i], index);
+
+                            //4
+                            argList.add(arg);
+                        } catch (Exception e) {
+                            throw new ExecutorException(e);
+                        }
+                    } else {
+                        throw new ExecutorException("param format error");
+                    }
+                }
+
+                realSqlBuilder.append(value);
+                start = matcher.end();
+            }
+
+            realSqlBuilder.append(rawSql.substring(start));
+
+            if (0 == index) {
+                sqlMetaModel.setSql(realSqlBuilder.toString());
+            }
+
+            argLists.add(argList.toArray());
+        }
+
+        sqlMetaModel.setArgsList(argLists);
     }
 
     /* for test */
@@ -115,7 +160,7 @@ public class SqlMetaModelBuilder {
                 new Object[] { 3, "abc", new TestClass() }).build();
 
         System.out.println(sqlMetaModel.getSql());
-        System.out.println(Arrays.asList(sqlMetaModel.getArgs()));
+        System.out.println(Arrays.asList(sqlMetaModel.getArgsList().get(0)));
     }
 
     interface TestDao {

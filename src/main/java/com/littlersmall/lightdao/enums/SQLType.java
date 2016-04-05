@@ -6,7 +6,8 @@ package com.littlersmall.lightdao.enums;
 public enum SqlType {
     EXECUTE(1, "ddl语句等"),
     SELECT(2, "query语句"),
-    UPDATE(3, "insert or update 语句");
+    UPDATE(3, "insert or update 语句"),
+    BATCH_UPDATE(5, "批量insert or update 语句");
 
     int id;
     String desc;

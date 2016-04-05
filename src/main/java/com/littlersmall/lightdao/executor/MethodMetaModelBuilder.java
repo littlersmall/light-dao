@@ -27,22 +27,19 @@ public class MethodMetaModelBuilder {
     }
 
     //1 构造原始sql，和sqlType
-    //2 构造sqlParamMap
-    //3 构造stringParamMap
-    //4 构造返回类型
-    //5 构建RowMapper
+    //2 构造ParamMap
+    //3 构造返回类型
+    //4 构建RowMapper
     public MethodMetaModel build() {
         MethodMetaModel methodMetaModel = new MethodMetaModel();
 
         //1
         conSqlAndType(methodMetaModel);
         //2
-        conSqlParam(methodMetaModel);
+        conParamMap(methodMetaModel);
         //3
-        conStringParam(methodMetaModel);
-        //4
         conReturnType(methodMetaModel);
-        //5
+        //4
         conRowMapper(methodMetaModel);
 
         log.info("method name: " + method.getName() + " meta data: " + methodMetaModel);
@@ -68,6 +65,9 @@ public class MethodMetaModelBuilder {
                 sqlType = SqlType.EXECUTE;
                 rawSql = ((Execute) annotation).value();
                 break;
+            } else if (annotation instanceof BatchUpdate) {
+                sqlType = SqlType.BATCH_UPDATE;
+                rawSql = ((BatchUpdate) annotation).value();
             }
         }
 
@@ -79,42 +79,32 @@ public class MethodMetaModelBuilder {
         methodMetaModel.setRawSql(rawSql);
     }
 
-    private void conSqlParam(MethodMetaModel methodMetaModel) {
+    private void conParamMap(MethodMetaModel methodMetaModel) {
         Map<String, Integer> sqlParam = new HashMap<String, Integer>();
+        Map<String, Integer> stringParam = new HashMap<String, Integer>();
         Annotation[][] annotations = method.getParameterAnnotations();
 
         for (int index = 0; index < annotations.length; index++) {
             for (Annotation annotation : annotations[index]) {
                 if (annotation instanceof SqlParam) {
                     sqlParam.put(((SqlParam) annotation).value(), index);
-                }
-            }
-        }
-
-        methodMetaModel.setSqlParamMap(sqlParam);
-    }
-
-    private void conStringParam(MethodMetaModel methodMetaModel) {
-        Map<String, Integer> stringParam = new HashMap<String, Integer>();
-        Annotation[][] annotations = method.getParameterAnnotations();
-
-        for (int index = 0; index < annotations.length; index++) {
-            for (Annotation annotation : annotations[index]) {
-                if (annotation instanceof StringParam) {
+                } else if (annotation instanceof StringParam) {
                     stringParam.put(((StringParam) annotation).value(), index);
                 }
             }
         }
 
+        methodMetaModel.setSqlParamMap(sqlParam);
         methodMetaModel.setStringParamMap(stringParam);
     }
 
     private void conReturnType(MethodMetaModel methodMetaModel) {
-        boolean isReturnList = method.getReturnType().isAssignableFrom(List.class);
+        //由于反射的擦除，所以相同, List<T>.class == List.class == List<U>.class
+        boolean isReturnList = List.class.equals(method.getReturnType());
         Class<?> returnType;
 
         if (isReturnList) {
-             returnType = ReflectTool.getActualClass(method.getGenericReturnType());
+            returnType = ReflectTool.getActualClass(method.getGenericReturnType());
         } else {
             returnType = method.getReturnType();
         }

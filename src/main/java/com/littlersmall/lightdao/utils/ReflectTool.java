@@ -44,7 +44,7 @@ public class ReflectTool {
     public static  Class<?> getActualClass(Type genericType) {
         Class<?> actualClass = null;
 
-        if (genericType instanceof  ParameterizedType) {
+        if (genericType instanceof ParameterizedType) {
             Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
 
             if (actualType instanceof  Class<?>) {
@@ -79,6 +79,16 @@ public class ReflectTool {
         }
 
         return value;
+    }
+
+    //如果是list，则返回list中的第index个元素
+    //否则返回该object
+    public static Object getListObject(Object object, int index) {
+        if (object instanceof List) {
+            return ((List<?>) object).get(index);
+        } else {
+            return object;
+        }
     }
 
     /* for test */

@@ -40,6 +40,10 @@ public class LightTemplate {
         jdbcTemplate.execute(sql);
     }
 
+    public int[] batchUpdate(String sql, List<Object[]> objects) {
+        return jdbcTemplate.batchUpdate(sql, objects);
+    }
+
     //根据sql(已将参数替换成?)和args生成Prepare语句
     private PreparedStatementCreator getPreparedCreator(final String sql, final Object[] args) {
         return new PreparedStatementCreator() {

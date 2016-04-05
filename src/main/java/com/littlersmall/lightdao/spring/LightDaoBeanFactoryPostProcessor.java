@@ -4,8 +4,6 @@ import com.littlersmall.lightdao.exception.SpringException;
 import com.littlersmall.lightdao.spring.classgenerator.LightDaoFactoryBean;
 import com.littlersmall.lightdao.dataaccess.DataSourceHolder;
 import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
