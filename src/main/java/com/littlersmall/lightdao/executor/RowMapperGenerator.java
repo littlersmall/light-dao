@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.apache.commons.lang3.ClassUtils;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -21,8 +22,10 @@ public class RowMapperGenerator {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static RowMapper mapRow(final Class<?> clazz) {
         //1
-        if (clazz.isPrimitive()) {
+        if (clazz.isPrimitive()) { //基本类型
             return new SingleColumnRowMapper(ClassUtils.primitiveToWrapper(clazz));
+        } else if (ClassUtils.isPrimitiveWrapper(clazz)) { //包装类
+            return new SingleColumnRowMapper(clazz);
         } else return new RowMapper() { //2
             public Object mapRow(ResultSet resultSet, int rowNum) {
                 Object instance;
@@ -69,8 +72,10 @@ public class RowMapperGenerator {
             } else if (valueType == double.class
                     || valueType == Double.class) {
                 value = resultSet.getFloat(valueName);
+            } else if (valueType == Date.class) {
+                value = resultSet.getDate(valueName);
             } else {
-                throw new ExecutorException("the bean for return not legal");
+                throw new ExecutorException("the bean for return not legal " + valueType);
             }
         } catch (SQLException e) {
             throw new ExecutorException(e);

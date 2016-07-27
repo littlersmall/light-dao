@@ -53,7 +53,6 @@ public class SqlMetaModelBuilder {
         if (null != rawArgs) {
             for (Object object : rawArgs) {
                 if (object instanceof List) {
-                    System.out.println("bbbbbbbb" + object.getClass());
                     length = ((List<?>) object).size();
                     break;
                 }
@@ -131,6 +130,7 @@ public class SqlMetaModelBuilder {
                             //4
                             argList.add(arg);
                         } catch (Exception e) {
+                            e.printStackTrace();
                             throw new ExecutorException(e);
                         }
                     } else {

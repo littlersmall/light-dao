@@ -20,7 +20,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<context:component-scan base-package="com">
 	</context:component-scan>
 
-
+	<!-- for example -->
 	<bean id="MyDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		  destroy-method="close" lazy-init="false">
 		<property name="driverClassName" value="org.h2.Driver"></property>

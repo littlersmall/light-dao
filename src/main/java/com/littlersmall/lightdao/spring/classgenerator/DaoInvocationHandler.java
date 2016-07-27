@@ -3,6 +3,8 @@ package com.littlersmall.lightdao.spring.classgenerator;
 import com.littlersmall.lightdao.dataaccess.DataSourceHolder;
 import com.littlersmall.lightdao.executor.SqlExecutor;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -22,7 +24,20 @@ public class DaoInvocationHandler implements InvocationHandler {
     //对应于Dao接口里的函数
     //将每一个函数映射为一个SqlExecutor
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (!sqlExecutorMap.containsKey(method)) {
+        //default方法不重写
+        if (method.isDefault()) {
+            Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class
+                    .getDeclaredConstructor(Class.class, int.class);
+            constructor.setAccessible(true);
+
+            Class<?> declaringClass = method.getDeclaringClass();
+            int allModes = MethodHandles.Lookup.PUBLIC | MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED | MethodHandles.Lookup.PACKAGE;
+
+            return constructor.newInstance(declaringClass, allModes)
+                    .unreflectSpecial(method, declaringClass)
+                    .bindTo(proxy)
+                    .invokeWithArguments(args);
+        } else if (!sqlExecutorMap.containsKey(method)) {
             synchronized (method) {
                 if (!sqlExecutorMap.containsKey(method)) {
                     SqlExecutor sqlExecutor = new SqlExecutor.Builder(method, dataSourceHolder.getLightTemplate()).build();
