@@ -1,5 +1,6 @@
 # light-dao
-20160727 更新
+**20160727 更新**
+
 1 修复bug(在输出日志时产生的空指针问题)
 
 2 将spring框架调整为<scope>provided</scope>，避免打包spring
@@ -12,7 +13,7 @@
 
 6 调整部分日志输出格式
 
-
+---
 
 light-dao是一个轻量级的orm处理框架。
 
