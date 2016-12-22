@@ -1,4 +1,25 @@
 # light-dao
+
+**20161222 更新**
+1 增加新的sql调用方式
+```
+QueryCreator queryCreator = new QueryCreator(creatorExample.myDataSource);
+System.out.println(queryCreator.select(InfoDao.Info.class)
+        .from("info")
+        .where("id = 1")
+        .and("user_id = 2")
+        .groupBy("id")
+        .orderBy("user_id")
+        .limit(1)
+        .execute());
+```
+
+2 使用示例见example.CreatorExample
+
+3 修复部分文件名大小写问题
+
+---
+
 **20160727 更新**
 
 1 修复bug(在输出日志时产生的空指针问题)
