@@ -5,14 +5,14 @@
 1 增加新的sql调用方式
 ```
 QueryCreator queryCreator = new QueryCreator(creatorExample.myDataSource);
-System.out.println(queryCreator.select(InfoDao.Info.class)
+queryCreator.select(InfoDao.Info.class)
         .from("info")
         .where("id = 1")
         .and("user_id = 2")
         .groupBy("id")
         .orderBy("user_id")
         .limit(1)
-        .execute());
+        .execute();
 ```
 
 2 使用示例见example.CreatorExample
