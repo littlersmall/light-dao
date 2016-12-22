@@ -1,6 +1,7 @@
 # light-dao
 
 **20161222 更新**
+
 1 增加新的sql调用方式
 ```
 QueryCreator queryCreator = new QueryCreator(creatorExample.myDataSource);
