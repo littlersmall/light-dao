@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sigh on 2016/1/19.
@@ -24,16 +25,28 @@ public class LightTemplate {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public <T> List<T> select(String sql, Object[] args, RowMapper rowMapper) {
+    public <T> List<T> select(String sql, Object[] args, RowMapper<T> rowMapper) {
         PreparedStatementCreator preparedStatementCreator = getPreparedCreator(sql, args);
 
         return (List<T>) jdbcTemplate.query(preparedStatementCreator, new RowMapperResultSetExtractor(rowMapper));
+    }
+
+    public <T> List<T> select(String sql, RowMapper<T> rowMapper) {
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<Map<String, Object>> select(String sql) {
+        return jdbcTemplate.queryForList(sql);
     }
 
     public int update(String sql, Object[] args) {
         PreparedStatementCreator preparedStatementCreator = getPreparedCreator(sql, args);
 
         return jdbcTemplate.update(preparedStatementCreator);
+    }
+
+    public int update(String sql) {
+        return jdbcTemplate.update(sql);
     }
 
     public void execute(String sql) throws DataAccessException {

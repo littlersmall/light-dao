@@ -15,7 +15,7 @@ public class SqlMetaModel {
     String sql;
     List<Object[]> argsList;
     SqlType sqlType;
-    RowMapper rowMapper;
+    RowMapper<?> rowMapper;
     boolean isReturnList;
 
     @Override

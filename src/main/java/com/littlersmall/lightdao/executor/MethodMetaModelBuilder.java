@@ -114,7 +114,7 @@ public class MethodMetaModelBuilder {
     }
 
     private void conRowMapper(MethodMetaModel methodMetaModel) {
-        RowMapper rowMapper = RowMapperGenerator.mapRow(methodMetaModel.getReturnType());
+        RowMapper<?> rowMapper = RowMapperGenerator.mapRow(methodMetaModel.getReturnType());
 
         methodMetaModel.setRowMapper(rowMapper);
     }

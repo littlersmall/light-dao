@@ -34,6 +34,20 @@ public class PropertyInfo {
         setValue(targetWriteMethod, new Object[] { value });
     }
 
+    public Object getValue() {
+        Method targetReadMethod = propertyDescriptor.getReadMethod();
+        Object value = null;
+
+        try {
+            targetReadMethod.setAccessible(true);
+            value = targetReadMethod.invoke(target);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return value;
+    }
+
     private void setValue(Method method, Object[] args) {
         if (method == null || args == null) {
             throw new ReflectException("method is null or args is null");

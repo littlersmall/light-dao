@@ -17,5 +17,5 @@ public class MethodMetaModel {
     Class<?> returnType;
     Map<String, Integer> sqlParamMap;
     Map<String, Integer> stringParamMap;
-    RowMapper rowMapper;
+    RowMapper<?> rowMapper;
 }

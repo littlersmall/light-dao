@@ -9,6 +9,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by sigh on 2016/1/20.
@@ -79,6 +80,12 @@ public class ReflectTool {
         }
 
         return value;
+    }
+
+    public static List<Object> getValues(Object target) {
+        return getPropertyNames(target).stream()
+                .map(PropertyInfo::getValue)
+                .collect(Collectors.toList());
     }
 
     //如果是list，则返回list中的第index个元素
