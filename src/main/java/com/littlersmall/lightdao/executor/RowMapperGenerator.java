@@ -2,7 +2,7 @@ package com.littlersmall.lightdao.executor;
 
 import com.littlersmall.lightdao.exception.ExecutorException;
 import com.littlersmall.lightdao.utils.PropertyInfo;
-import com.littlersmall.lightdao.utils.ReflectTool;
+import com.littlersmall.lightdao.utils.ReflectUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.apache.commons.lang3.ClassUtils;
@@ -33,7 +33,7 @@ public class RowMapperGenerator {
                 try {
                     instance = clazz.newInstance();
 
-                    for (PropertyInfo propertyInfo : ReflectTool.getPropertyNames(instance)) {
+                    for (PropertyInfo propertyInfo : ReflectUtils.getPropertyNames(instance)) {
                         String name = propertyInfo.getName();
                         Class<?> type = propertyInfo.getType();
                         Object value = getValue(name, type, resultSet);

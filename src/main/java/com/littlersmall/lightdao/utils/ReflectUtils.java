@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Created by sigh on 2016/1/20.
  */
-public class ReflectTool {
+public class ReflectUtils {
     public static List<PropertyInfo> getPropertyNames(Object target) {
         List<PropertyInfo> propertyInfos = new ArrayList<PropertyInfo>();
 
@@ -77,6 +77,22 @@ public class ReflectTool {
             throw new ReflectException(e);
         } catch (IllegalAccessException e) {
             throw new ReflectException(e);
+        }
+
+        return value;
+    }
+
+    //可以获取 private 且无 get 方法的 field 值
+    public static Object getField(Object target, String fieldName) {
+        Object value;
+
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+
+            field.setAccessible(true);
+            value = field.get(target);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new ReflectException("get field failed");
         }
 
         return value;

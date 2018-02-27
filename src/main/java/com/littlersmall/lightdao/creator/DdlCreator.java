@@ -15,6 +15,6 @@ public class DdlCreator {
     }
 
     public void execute(String sql) {
-       lightTemplate.execute(sql);
+        lightTemplate.execute(sql);
     }
 }

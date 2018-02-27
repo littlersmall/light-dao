@@ -4,7 +4,7 @@ import com.littlersmall.lightdao.annotation.*;
 import com.littlersmall.lightdao.exception.ExecutorException;
 import com.littlersmall.lightdao.executor.model.MethodMetaModel;
 import com.littlersmall.lightdao.executor.model.SqlMetaModel;
-import com.littlersmall.lightdao.utils.ReflectTool;
+import com.littlersmall.lightdao.utils.ReflectUtils;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.springframework.beans.BeanUtils;
@@ -103,21 +103,21 @@ public class SqlMetaModelBuilder {
                         int i = sqlParamMap.get(key);
 
                         //4
-                        argList.add(ReflectTool.getListObject(rawArgs[i], index));
+                        argList.add(ReflectUtils.getListObject(rawArgs[i], index));
                     } else if (key.contains(".")) { //特殊的SqlParam 例如 user.name
                         String params[] = key.split("\\.");
 
                         if (sqlParamMap.containsKey(params[0])) {
                             int i = sqlParamMap.get(params[0]);
-                            Object param = ReflectTool.getListObject(rawArgs[i], index);
-                            Object arg = ReflectTool.getFieldByName(param, params[1]);
+                            Object param = ReflectUtils.getListObject(rawArgs[i], index);
+                            Object arg = ReflectUtils.getFieldByName(param, params[1]);
 
                             //4
                             argList.add(arg);
                         } else if (Character.isDigit(params[0].charAt(0))) { //{0.id}, {1.name}
                             int i = Integer.valueOf(params[0]);
-                            Object param = ReflectTool.getListObject(rawArgs[i], index);
-                            Object arg = ReflectTool.getFieldByName(param, params[1]);
+                            Object param = ReflectUtils.getListObject(rawArgs[i], index);
+                            Object arg = ReflectUtils.getFieldByName(param, params[1]);
 
                             //4
                             argList.add(arg);
@@ -125,7 +125,7 @@ public class SqlMetaModelBuilder {
                     } else if (Character.isDigit(key.charAt(0))) { //{0}, {1}
                         try {
                             int i = Integer.valueOf(key);
-                            Object arg = ReflectTool.getListObject(rawArgs[i], index);
+                            Object arg = ReflectUtils.getListObject(rawArgs[i], index);
 
                             //4
                             argList.add(arg);

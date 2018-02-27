@@ -4,7 +4,7 @@ import com.littlersmall.lightdao.annotation.*;
 import com.littlersmall.lightdao.enums.SqlType;
 import com.littlersmall.lightdao.exception.ExecutorException;
 import com.littlersmall.lightdao.executor.model.MethodMetaModel;
-import com.littlersmall.lightdao.utils.ReflectTool;
+import com.littlersmall.lightdao.utils.ReflectUtils;
 import lombok.extern.java.Log;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -104,7 +104,7 @@ public class MethodMetaModelBuilder {
         Class<?> returnType;
 
         if (isReturnList) {
-            returnType = ReflectTool.getActualClass(method.getGenericReturnType());
+            returnType = ReflectUtils.getActualClass(method.getGenericReturnType());
         } else {
             returnType = method.getReturnType();
         }
