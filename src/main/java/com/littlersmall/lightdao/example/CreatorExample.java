@@ -1,7 +1,9 @@
 package com.littlersmall.lightdao.example;
 
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Range;
 import com.littlersmall.lightdao.annotation.PrimaryKey;
 import com.littlersmall.lightdao.base.DAOBaseGet;
 import com.littlersmall.lightdao.base.DAOBaseInsert;
@@ -36,8 +38,8 @@ public class CreatorExample implements DAOBaseGet<CreatorExample.Info>, DAOBaseI
     }
 
     @Autowired
-    @Qualifier("MyDbDataSource")
-    DataSource myDataSource;
+    @Qualifier("myDbDataSource")
+    private DataSource myDataSource;
 
     @Override
     public Class<Info> getClazz() {
@@ -64,7 +66,11 @@ public class CreatorExample implements DAOBaseGet<CreatorExample.Info>, DAOBaseI
 
         creatorExample.insert(new Info(1, "1", 11));
         creatorExample.insert(new Info(2, "2", 22));
+        creatorExample.insert(new Info(3, "3", 33));
 
-        System.out.println(creatorExample.listAllDesc().collect(Collectors.toList()));
+        //System.out.println(creatorExample.listAllDesc().collect(Collectors.toList()));
+
+        System.out.println(creatorExample.listByRangeDesc("id", Range.open(1, 3)).collect(Collectors.toList()));
+        System.out.println(creatorExample.sumByKey("id", 2, "userId"));
     }
 }

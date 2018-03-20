@@ -1,7 +1,10 @@
 package com.littlersmall.lightdao.utils;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -11,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Range;
 
 import lombok.extern.java.Log;
 
@@ -69,5 +73,34 @@ public class DAOUtils {
                 .map(field -> ":" + field.getName()).collect(Collectors.toList());
 
         return Joiner.on(", ").join(fieldList);
+    }
+
+    public static <Key extends Comparable> List<String> buildRangeConditions(MapSqlParameterSource mapSqlParameterSource,
+                                                                             String rangeKeyName, Range<Key> range) {
+        List<String> conditions = new ArrayList<>();
+
+        if (range.hasLowerBound()) {
+            if (range.contains(range.lowerEndpoint())) { // >=
+                conditions.add(format(" %s >= :%s ", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rangeKeyName)
+                        , rangeKeyName + "Low"));
+            } else { // >
+                conditions.add(format(" %s > :%s ", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rangeKeyName)
+                        , rangeKeyName + "Low"));
+            }
+            mapSqlParameterSource.addValue(rangeKeyName + "Low", range.lowerEndpoint());
+        }
+
+        if (range.hasUpperBound()) {
+            if (range.contains(range.upperEndpoint())) { // <=
+                conditions.add(format(" %s <= :%s ", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rangeKeyName)
+                        , rangeKeyName + "Up"));
+            } else { // <
+                conditions.add(format(" %s < :%s ", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, rangeKeyName)
+                        , rangeKeyName + "Up"));
+            }
+            mapSqlParameterSource.addValue(rangeKeyName + "Up", range.upperEndpoint());
+        }
+
+        return conditions;
     }
 }

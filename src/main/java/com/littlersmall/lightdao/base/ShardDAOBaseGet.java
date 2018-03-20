@@ -15,7 +15,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.github.phantomthief.util.CursorIterator;
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Range;
 import com.littlersmall.lightdao.creator.SqlQueryBuilder;
+import com.littlersmall.lightdao.utils.DAOUtils;
 
 /**
  * Created by littlersmall on 2017/8/30.
@@ -148,6 +150,58 @@ public interface ShardDAOBaseGet<T> extends ShardDAOBase<T> {
                 .stream();
     }
 
+    default <Key extends Comparable> Stream<T> listByRangeDesc(long shardId, String keyName, Range<Key> range) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+        final String dbPrimaryKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
+                getPrimaryKeyName());
+        List<String> conditions = DAOUtils.buildRangeConditions(mapSqlParameterSource, keyName, range);
+
+        return CursorIterator.<Long, T>newGenericBuilder().bufferSize(BUFFER_SIZE)
+                .start(Long.MAX_VALUE).cursorExtractor(this::getPrimaryKey)
+                .build((cursor, limit) -> getReader().query(
+                        new SqlQueryBuilder()
+                                .select("*")
+                                .from(getTableName(shardId))
+                                .where(conditions)
+                                .and(format("%s<=:cursor", dbPrimaryKeyName))
+                                .orderBy(dbPrimaryKeyName)
+                                .desc()
+                                .limit(":limit")
+                                .build(),
+                        mapSqlParameterSource.addValue("cursor", cursor)
+                                .addValue("limit", limit),
+                        getRowMapper()))
+                .stream();
+    }
+
+    default <Key, RangeKey extends Comparable> Stream<T> listByKeyAndRangeDesc(long shardId, String keyName, Key key,
+                                                                           String rangeKeyName, Range<RangeKey> range) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
+        final String dbPrimaryKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
+                getPrimaryKeyName());
+        List<String> conditions = DAOUtils.buildRangeConditions(mapSqlParameterSource, rangeKeyName, range);
+
+        conditions.add(format(" %s=:%s ", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, keyName), keyName));
+        mapSqlParameterSource.addValue(keyName, key);
+
+        return CursorIterator.<Long, T>newGenericBuilder().bufferSize(BUFFER_SIZE)
+                .start(Long.MAX_VALUE).cursorExtractor(this::getPrimaryKey)
+                .build((cursor, limit) -> getReader().query(
+                        new SqlQueryBuilder()
+                                .select("*")
+                                .from(getTableName(shardId))
+                                .where(conditions)
+                                .and(format("%s<=:cursor", dbPrimaryKeyName))
+                                .orderBy(dbPrimaryKeyName)
+                                .desc()
+                                .limit(":limit")
+                                .build(),
+                        mapSqlParameterSource.addValue("cursor", cursor)
+                                .addValue("limit", limit),
+                        getRowMapper()))
+                .stream();
+    }
+
     default <Key> Stream<T> listOppositeByKeyDesc(long shardId, String keyName, Key key) {
         final String dbKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, keyName);
         final String dbPrimaryKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
@@ -261,6 +315,42 @@ public interface ShardDAOBaseGet<T> extends ShardDAOBase<T> {
         return getReader().queryForObject(
                 new SqlQueryBuilder()
                         .select("count(1)")
+                        .from(getTableName(shardId))
+                        .where(format("%s=:%s and %s=:%s", dbKeyName1, keyName1, dbKeyName2, keyName2))
+                        .build(),
+                new MapSqlParameterSource(keyName1, key1).addValue(keyName2, key2),
+                Long.class);
+    }
+
+    default <Key> long sumByKey(String keyName, Key key, String sumKey) {
+        return LongStream.range(0, shardCount()).boxed()
+                .mapToLong(shard -> sumByKey(shard, keyName, key, sumKey))
+                .sum();
+    }
+
+    default <Key> long sumByKey(long shardId, String keyName, Key key, String sumKey) {
+        final String dbKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, keyName);
+        final String dbSumKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, sumKey);
+
+        return getReader().queryForObject(
+                new SqlQueryBuilder()
+                        .select(format("sum(%s)", dbSumKeyName))
+                        .from(getTableName(shardId))
+                        .where(format("%s=:%s", dbKeyName, keyName))
+                        .build(),
+                new MapSqlParameterSource(keyName, key),
+                Long.class);
+    }
+
+    default <Key1, Key2> long sumByKey(long shardId, String keyName1, Key1 key1,
+                                       String keyName2, Key2 key2, String sumKey) {
+        final String dbKeyName1 = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, keyName1);
+        final String dbKeyName2 = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, keyName2);
+        final String dbSumKeyName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, sumKey);
+
+        return getReader().queryForObject(
+                new SqlQueryBuilder()
+                        .select(format("sum(%s)", dbSumKeyName))
                         .from(getTableName(shardId))
                         .where(format("%s=:%s and %s=:%s", dbKeyName1, keyName1, dbKeyName2, keyName2))
                         .build(),
