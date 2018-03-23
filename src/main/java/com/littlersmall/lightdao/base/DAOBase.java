@@ -45,7 +45,7 @@ public interface DAOBase<T> {
                 .getName());
     }
 
-    default long getPrimaryKey(Object model) {
+    default long getPrimaryKey(T model) {
         return (long) ReflectUtils.getField(model, getPrimaryKeyName());
     }
 }

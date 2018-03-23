@@ -22,6 +22,9 @@ import com.littlersmall.lightdao.utils.DAOUtils;
 public interface DAOBaseInsert<T> extends DAOBase<T> {
     NamedParameterJdbcTemplate getWriter();
 
+    /*
+     insert into TABLE(column1, column2...) values (value1, value2...);
+     */
     default int insert(T model) {
         return insert(model, null);
     }
@@ -42,6 +45,9 @@ public interface DAOBaseInsert<T> extends DAOBase<T> {
 
     //注意，replace 语句如有成功更新，返回2(not 1, 底层实现是先delete 后 insert，所以是2条)
     //如果只是插入，或者该行数据完全无修改，返回1
+    /*
+     replace into TABLE(column1, column2...) values (value1, value2...);
+     */
     default int replace(T model) {
         return replace(model, null);
     }
@@ -84,6 +90,9 @@ public interface DAOBaseInsert<T> extends DAOBase<T> {
         }
     }
 
+    /*
+     insert into TABLE(column1, column2...) values(value1, value2...) on duplicate key update conditions
+     */
     default int insertOnDuplicate(T model, String... conditions) {
         return insertOnDuplicate(model, Arrays.asList(conditions));
     }
@@ -111,6 +120,9 @@ public interface DAOBaseInsert<T> extends DAOBase<T> {
                 DAOUtils.toParameterSource(model));
     }
 
+    /*
+     update TABLE set key_name = key where primary_key = primaryKey
+     */
     default <Key> int update(long primaryKey, String keyName, Key key) {
         return update(primaryKey, keyName, key, null);
     }

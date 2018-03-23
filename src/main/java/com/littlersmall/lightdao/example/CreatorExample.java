@@ -1,13 +1,8 @@
 package com.littlersmall.lightdao.example;
 
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Range;
-import com.littlersmall.lightdao.annotation.PrimaryKey;
-import com.littlersmall.lightdao.base.DAOBaseGet;
-import com.littlersmall.lightdao.base.DAOBaseInsert;
-import com.littlersmall.lightdao.creator.DdlCreator;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +11,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
+import com.google.common.collect.Range;
+import com.littlersmall.lightdao.annotation.PrimaryKey;
+import com.littlersmall.lightdao.base.DAOBaseGet;
+import com.littlersmall.lightdao.base.DAOBaseInsert;
+import com.littlersmall.lightdao.creator.DdlCreator;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

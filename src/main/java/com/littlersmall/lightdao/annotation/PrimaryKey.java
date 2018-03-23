@@ -25,7 +25,5 @@ public @interface PrimaryKey {
     注意：
     1 主键必须和数据库的主键名一致
     2 主键必须为long(or Long or int or Integer)类型
-
-    本次升级为兼容性升级，不影响原来的PrimaryKey接口使用，但PrimaryKey接口会逐渐废弃。
      */
 }
