@@ -1,5 +1,7 @@
 package com.littlersmall.lightdao.base;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,11 +18,24 @@ import com.littlersmall.lightdao.utils.ReflectUtils;
  */
 public interface ShardDAOBase<T> {
     int DEFAULT_SHARD_COUNT = 100;
+    Map<Class<?>, Type> CLAZZ_MAPPER_MAP = new ConcurrentHashMap<>();
     Map<Class, RowMapper> ROW_MAPPER_MAP = new ConcurrentHashMap<>();
     Map<Class, String> TABLE_NAME_MAP = new ConcurrentHashMap<>();
     Map<Class, String> PRIMARY_KEY_NAME_MAP = new ConcurrentHashMap<>();
 
-    Class<T> getClazz();
+    @SuppressWarnings("unchecked")
+    default Class<T> getClazz() {
+        return (Class<T>) CLAZZ_MAPPER_MAP.computeIfAbsent(this.getClass(), thisClazz -> {
+            Type[] superInterfaces = thisClazz.getGenericInterfaces();
+
+            return Arrays.stream(superInterfaces)
+                    .filter(clazz -> clazz instanceof ParameterizedType)
+                    .filter(clazz -> DAOBase.class.isAssignableFrom((Class<?>)((ParameterizedType) clazz).getRawType()))
+                    .findAny()
+                    .map(clazz -> ((ParameterizedType) clazz).getActualTypeArguments()[0])
+                    .get();
+        });
+    }
 
     @SuppressWarnings("unchecked")
     default RowMapper<T> getRowMapper() {

@@ -1,5 +1,6 @@
 package com.littlersmall.lightdao.example;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -40,10 +41,12 @@ public class CreatorExample implements DAOBaseGet<CreatorExample.Info>, DAOBaseI
     @Qualifier("myDbDataSource")
     private DataSource myDataSource;
 
+    /*
     @Override
     public Class<Info> getClazz() {
         return Info.class;
     }
+    */
 
     @Override
     public NamedParameterJdbcTemplate getReader() {
@@ -64,12 +67,21 @@ public class CreatorExample implements DAOBaseGet<CreatorExample.Info>, DAOBaseI
         ddlCreator.execute("create table info (id int, information varchar, user_id int)");
 
         creatorExample.insert(new Info(1, "1", 11));
-        creatorExample.insert(new Info(2, "2", 22));
+        creatorExample.insert(new Info(2, "1", 22));
         creatorExample.insert(new Info(3, "3", 33));
 
         //System.out.println(creatorExample.listAllDesc().collect(Collectors.toList()));
 
         System.out.println(creatorExample.listByRangeDesc("id", Range.open(1, 3)).collect(Collectors.toList()));
         System.out.println(creatorExample.sumByKey("id", 2, "userId"));
+        System.out.println(creatorExample.listByKeyDesc("information", 1, "userId", 11).collect(Collectors.toList()));
+
+        Date date = new Date(1000);
+
+        java.sql.Date date1 = new java.sql.Date(1000);
+
+        System.out.println(date.equals(date1));
+        System.out.println(date1.equals(date));
+
     }
 }

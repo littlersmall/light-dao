@@ -34,19 +34,27 @@ public class DAOUtils {
         return i == 0 ? null : i;
     }
 
-    //只针对Model
+    //只针对model
     public static <T> MapSqlParameterSource toParameterSource(T model) {
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-        Field[] fields = model.getClass().getDeclaredFields();
+        List<Field> fieldList = new ArrayList<>();
+        Class curClazz = model.getClass();
 
-        Arrays.stream(fields).filter(field -> !Modifier.isStatic(field.getModifiers()))
+        //解决继承问题
+        while (curClazz != null && !curClazz.getName().toLowerCase().equals("java.lang.object")) {
+            Field[] fields = curClazz.getDeclaredFields();
+            fieldList.addAll(Arrays.asList(fields));
+            curClazz = curClazz.getSuperclass();
+        }
+
+        fieldList.stream()
+                .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .forEach(field -> {
                     try {
                         field.setAccessible(true);
                         mapSqlParameterSource.addValue(field.getName(), field.get(model));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
-                        log.info("access field error");
                     }
                 });
 
@@ -55,24 +63,42 @@ public class DAOUtils {
 
     //产生sql字符串, 类似" user, name, user_info ", xx_xx的命名方式
     public static String toColumnStr(Class<?> clazz) {
-        Field[] fields = clazz.getDeclaredFields();
-        List<String> fieldList = Arrays.stream(fields)
+        List<Field> fieldList = new ArrayList<>();
+        Class curClazz = clazz;
+
+        //解决继承问题
+        while (curClazz != null && !curClazz.getName().toLowerCase().equals("java.lang.object")) {
+            Field[] fields = curClazz.getDeclaredFields();
+            fieldList.addAll(Arrays.asList(fields));
+            curClazz = curClazz.getSuperclass();
+        }
+
+        List<String> fieldStrList = fieldList.stream()
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .map(field -> CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
                         field.getName()))
                 .collect(Collectors.toList());
 
-        return Joiner.on(", ").join(fieldList);
+        return Joiner.on(", ").join(fieldStrList);
     }
 
     //产生sql字符串，类似" :user, :name, :userInfo ", xxXXX的命名方式
     public static String toValueStr(Class<?> clazz) {
-        Field[] fields = clazz.getDeclaredFields();
-        List<String> fieldList = Arrays.stream(fields)
+        List<Field> fieldList = new ArrayList<>();
+        Class curClazz = clazz;
+
+        //解决继承问题
+        while (curClazz != null && !curClazz.getName().toLowerCase().equals("java.lang.object")) {
+            Field[] fields = curClazz.getDeclaredFields();
+            fieldList.addAll(Arrays.asList(fields));
+            curClazz = curClazz.getSuperclass();
+        }
+
+        List<String> fieldStrList = fieldList.stream()
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .map(field -> ":" + field.getName()).collect(Collectors.toList());
 
-        return Joiner.on(", ").join(fieldList);
+        return Joiner.on(", ").join(fieldStrList);
     }
 
     public static <Key extends Comparable> List<String> buildRangeConditions(MapSqlParameterSource mapSqlParameterSource,
