@@ -1,5 +1,11 @@
 # light-dao
 
+**20180731 更新**
+
+1 DAOBase中增加getClazz的默认实现，通过反射来获取DAOBase<T> T.class
+
+2 DAOUtils中增加对model继承的支持 
+
 **20180323 更新**
 
 本次为兼容性更新，新增基于接口的sql注入方式。使用更轻量级，无侵入的方式构建DAO层代码。具体更新请见：
