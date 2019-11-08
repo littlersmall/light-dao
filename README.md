@@ -1,6 +1,10 @@
 # light-dao
 
+**20180731 更新**
 
+1 DAOBase中增加getClazz的默认实现，通过反射来获取DAOBase<T> T.class
+
+2 DAOUtils中增加对model继承的支持 
 **20180731 更新**
 
 1 DAOBase中增加getClazz的默认实现，通过反射来获取DAOBase<T> T.class
