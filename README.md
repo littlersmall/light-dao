@@ -2,6 +2,7 @@
 **20180731 更新**
 
 1 DAOBase中增加getClazz的默认实现，通过反射来获取DAOBase<T> T.class
+
 **20180731 更新**
 
 1 DAOBase中增加getClazz的默认实现，通过反射来获取DAOBase<T> T.class
